@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CANONICAL_DATA_HASH, powers } from '../data/powers'
+import { CANONICAL_DATA_HASH, COMPATIBLE_CANONICAL_DATA_HASHES, powers } from '../data/powers'
 import { loadAutosave, saveAutosave } from './autosave'
 import { validateCanonicalData } from './canonicalValidation'
 import { calculateConvergenceStatus } from './convergence'
@@ -150,6 +150,18 @@ describe('save, reset, and autosave', () => {
     const payload = createSavePayload(progress, '2026-06-24T12:00:00.000Z')
 
     expect(payload.canonicalDataHash).toBe(CANONICAL_DATA_HASH)
+    expect(parseSaveFile(JSON.stringify(payload)).progress.powers['petrifying-gaze']?.state).toBe(
+      'first_manifestation',
+    )
+  })
+
+  it('accepts compatible saves from the previous canonical hash', () => {
+    const progress = progressWithStates({ 'petrifying-gaze': 'first_manifestation' })
+    const payload = {
+      ...createSavePayload(progress, '2026-06-24T12:00:00.000Z'),
+      canonicalDataHash: COMPATIBLE_CANONICAL_DATA_HASHES[1],
+    }
+
     expect(parseSaveFile(JSON.stringify(payload)).progress.powers['petrifying-gaze']?.state).toBe(
       'first_manifestation',
     )

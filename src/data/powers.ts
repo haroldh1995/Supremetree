@@ -1,13 +1,17 @@
 import type { LivingAnswerDefinition, PowerDefinition } from '../domain/types'
 
-export const APP_VERSION = '1.0.0'
+export const APP_VERSION = '1.0.1'
 export const SAVE_SCHEMA_VERSION = 1
-export const CANONICAL_DATA_VERSION = 'dumare-d20-superpower-tree-2026-06-24'
+export const CANONICAL_DATA_VERSION = 'dumare-d20-superpower-tree-2026-06-24-r2'
 export const CANONICAL_DATA_HASH =
-  '0379E4ADA4F3C15135F1017324C842136537B683AA0A909E09FF3F634A532FB7'
+  '4C9E47401A98BFED5A0D7354B7BEA97A51368016040D7BE6D9AD48D3C14CCD3C'
+export const COMPATIBLE_CANONICAL_DATA_HASHES = [
+  CANONICAL_DATA_HASH,
+  '0379E4ADA4F3C15135F1017324C842136537B683AA0A909E09FF3F634A532FB7',
+] as const
 
 export const canonicalSourceNote =
-  'Canonical text was transcribed from the uploaded Dumare_D20_Superpower_Tree.docx supplied on 2026-06-24.'
+  'Canonical text was transcribed from the updated uploaded Dumare_D20_Superpower_Tree.docx supplied on 2026-06-24.'
 
 export const powers: PowerDefinition[] = [
   {
@@ -21,6 +25,8 @@ export const powers: PowerDefinition[] = [
       "Dumare's eyes flash and encase anything he physically sees in stone. Holding the gaze adds more layers, and once the outer stone cannot expand outward, the pressure begins moving inward.",
     dmExample:
       'Dumare sees a charging demon and flashes his eyes, instantly coating its legs in stone long enough to stop the charge.',
+    firstRollBacklash:
+      "Uncontrolled Petrification: Dumare's eyes flash uncontrollably, and anything within his sightline may begin turning to stone, including enemies, allies, weapons, cover, terrain, and objects he never intended to target.",
     weaknesses:
       'Requires physical line of sight. Blindness, darkness, smoke, mirrors, invisibility, speed too fast to track, or enemies outside his field of vision can avoid it. Hexed or desecrated land can weaken or block the stone effect unless Gaia Reclamation is active.',
     selectable: true,
@@ -41,6 +47,8 @@ export const powers: PowerDefinition[] = [
       'Dumare develops true wingless flight through chaos-born gravity-pressure adaptation, letting him chase flyers, maneuver in open air, and fight across three-dimensional battlefields.',
     dmExample:
       'A flying enemy tries to stay above the fight, but Dumare launches upward and meets them in the air with a full-force tackle.',
+    firstRollBacklash:
+      'Gravitational Rejection: Gravity violently rejects Dumare in the wrong direction. He may launch upward, sideways, backward, or diagonally without control, dragging debris or nearby people into his pressure wake.',
     weaknesses:
       'Early flight may be rough, force-heavy, and hard to turn precisely. Gravity manipulation, spatial distortion, vacuum exposure before proper adaptation, anti-flight fields, or overwhelming aerial speed can counter it.',
     selectable: true,
@@ -61,6 +69,8 @@ export const powers: PowerDefinition[] = [
       'Dumare releases lightning mixed with light. It works as ranged offense, anti-corruption pressure, anti-demon force, energy-system disruption, and conductor-based battlefield control through natural metal, wet ground, stone veins, roots, or water.',
     dmExample:
       "Dumare punches the ground and Stormlight races through a metal war machine's legs, overloading its joints and burning corruption out of the battlefield.",
+    firstRollBacklash:
+      "Conductive Overflow: Stormlight erupts through Dumare's nerves and automatically jumps into nearby conductors. Metal, water, machines, roots, blood, spell channels, allies, enemies, and terrain may all carry the uncontrolled discharge.",
     weaknesses:
       'Poor conductors, insulated armor, energy absorption, lightning immunity, light-devouring darkness, or enemies with no corruption/system weakness can reduce its impact. It can also risk collateral damage through conductive environments.',
     selectable: true,
@@ -81,6 +91,8 @@ export const powers: PowerDefinition[] = [
       "Dumare's Disobedient Child evolves into a body-wide rejection of effects from all foreign sources. Magic, alchemy, curses, possession, banishment, forced transformation, soul hooks, teleport targeting, supernatural commands, reality impositions, divine influence, demonic effects, physical damage effects, and other foreign-source forces must fight Dumare before they can apply to him. During this contest, the effect does not immediately damage, alter, command, remove, rewrite, or define him. If Dumare wins the stat check, the effect fails to apply. If the foreign source overpowers The Grand Denial, the effect applies normally. This is not true negation; it is forced postponement and contest before application.",
     dmExample:
       "An alchemist launches a transmutation blade that cuts physically while also trying to rewrite Dumare's flesh into glass. Because the cut, damage, and alchemical change come from a foreign source, they do not immediately apply while The Grand Denial contests them. If Dumare stat-checks the effect, the cut and transmutation fail. If the alchemy overpowers him, the blade wounds him and the transformation begins.",
+    firstRollBacklash:
+      'Universal Rejection: Dumare rejects foreign influence too broadly. Enemy attacks are contested, but so are healing, buffs, rescue teleportation, protective magic, and other beneficial effects. Nearby imposed laws may also glitch as gravity, time, soul effects, and spell timing struggle against him.',
     weaknesses:
       "The Grand Denial can be overpowered by stronger force, superior magic, superior alchemy, divine authority, layered rituals, repeated pressure, overwhelming physical damage, or effects far above Dumare's current tier. It does not make him immune; it only forces foreign-source effects to defeat his denial before applying. Certain calamity weapons, absolute effects, or specialized anti-Dumare attacks may bypass the initial postponement and damage him immediately. Dumare's own inherent bloodline abilities, stabilized biological powers, self-generated consequences, and natural consequences that are not acting on him from a foreign source are not rejected.",
     selectable: true,
@@ -101,6 +113,8 @@ export const powers: PowerDefinition[] = [
       'Dumare stabilizes space around himself, contesting teleportation, portals, banishment, blinking, forced swaps, dimensional pulls, and spatial removal.',
     dmExample:
       'A sorcerer opens a portal under Dumare, but he stomps and the space buckles, forcing the portal to flicker instead of swallowing him.',
+    firstRollBacklash:
+      'Total Lockdown: Dumare anchors both himself and the surrounding space too aggressively. His body may become painfully fused to the terrain while nearby people, weapons, portals, teleportation, movement routes, and loose objects are also unintentionally pinned.',
     weaknesses:
       'It is not teleportation and does not stop enemies from physically running away. Extremely powerful spatial beings can overpower it. It works best near Dumare and may not stop large-scale teleportation far outside his pressure range.',
     selectable: true,
@@ -121,6 +135,8 @@ export const powers: PowerDefinition[] = [
       "Dumare's Dark Child evolves into his own chaos-born emergency contradiction. When every normal path leads to death, erasure, possession, or catastrophic defeat, his body creates one limited impossible outcome.",
     dmExample:
       'Dumare is about to be erased by an attack he cannot dodge, but reality glitches just enough for the attack to erase his shadow instead, giving him one chance to survive.',
+    firstRollBacklash:
+      'Contradiction Storm: Several impossible survival outcomes attempt to occur simultaneously. Dumare may survive the immediate threat, but reality resolves the contradictions unpredictably, creating new injuries, displaced consequences, or dangerous changes to the scene.',
     weaknesses:
       'Dumare does not choose the outcome. It is not a guaranteed win, not repeatable on command, and comes with severe strain. Enemies can still beat him afterward if he has no follow-up.',
     selectable: true,
@@ -141,6 +157,8 @@ export const powers: PowerDefinition[] = [
       'Dumare controls kinetic force from his own motion and impacts. Punches become shockwaves, claps become blasts, steps become quakes, and incoming force can be stored, redirected, or returned.',
     dmExample:
       'A giant strikes Dumare with a hammer; Dumare absorbs part of the impact, plants his feet, and returns it through a ground-cracking uppercut.',
+    firstRollBacklash:
+      'Motion Collapse: Dumare simultaneously leaks force from his own movements and steals momentum from nearby motion. Steps become quakes, flinches become blasts, and projectiles, spells, allies, enemies, machines, and falling objects may suddenly lose momentum that stores painfully inside him.',
     weaknesses:
       'It mainly works through motion, impact, and physical force. Energy attacks without kinetic pressure, force-nullifying fields, intangible attacks outside Achilles contact, or enemies that avoid impact exchanges can limit it.',
     selectable: true,
@@ -161,6 +179,8 @@ export const powers: PowerDefinition[] = [
       'Dumare routes his strength, stance, grip, and impact through natural material as if the world itself is part of his body. Stone, metal, earth, wood, and natural structures can carry his force.',
     dmExample:
       'Dumare punches a stone wall, and the force travels through the building to erupt beneath the enemy hiding on the other side.',
+    firstRollBacklash:
+      "Uncontrolled World Conduction: Dumare's heartbeat, stance, grip, and impacts travel through unintended natural-material pathways. Force may erupt through floors, walls, weapons, armor, trees, stone, metal, or structures far from where he intended.",
     weaknesses:
       'Needs usable natural material. Synthetic, void-made, cursed, hexed, desecrated, or disconnected environments can weaken it. Enemies who fight in open air or sterile artificial spaces can reduce its reach.',
     selectable: true,
@@ -201,6 +221,8 @@ export const powers: PowerDefinition[] = [
       'Dumare becomes the unavoidable predator-center of combat. Enemies are not mind-controlled, but ignoring, kiting, bypassing, disengaging, or escaping him becomes much harder once he commits to the hunt or protection role.',
     dmExample:
       "Assassins try to run past Dumare toward civilians, but every path feels worse because Dumare's position, timing, and pressure keep making him the problem they must answer first.",
+    firstRollBacklash:
+      'Feral Center: The predator effect applies to everyone. Dumare becomes intensely feral and battlefield-focused, reacting aggressively to movement, fear, hidden intent, and perceived threats without initially distinguishing enemies from allies or civilians.',
     weaknesses:
       'It does not force enemies to attack him and does not make him invincible. Coordinated focus fire, battlefield traps, long-range bombardment, or enemies willing to sacrifice allies can still work if Dumare lacks movement or disruption support.',
     selectable: true,
@@ -221,6 +243,8 @@ export const powers: PowerDefinition[] = [
       'Dumare moves in violent pressure bursts that break firing lines, disrupt target locks, ruin formation timing, and let him create openings under siege fire.',
     dmExample:
       'A battalion locks weapons onto Dumare, but he bursts through the firing rhythm, kicking up debris and pressure waves that make their volley misfire.',
+    firstRollBacklash:
+      'Uncontrolled Breakstep: Every attempt to step, pivot, brace, or shift weight can trigger a violent dash in an unintended direction. Pressure bursts, debris, and disrupted formations erupt along the wrong paths.',
     weaknesses:
       'It does not make him untouchable. Predictive targeting, wide-area attacks, traps placed along his route, enclosed spaces, or enemies who do not rely on formation timing can counter it.',
     selectable: true,
@@ -241,6 +265,8 @@ export const powers: PowerDefinition[] = [
       "Dumare's Pain to Adapt becomes immediately useful. Repeated suppression, knockback, restraints, impact, or movement denial becomes progressively less effective at keeping him out of the fight.",
     dmExample:
       'A war machine keeps blasting Dumare backward. The first shots launch him, but each repeat teaches his body how to keep advancing through that same pressure.',
+    firstRollBacklash:
+      'Adaptation Flood: Pain to Adapt opens every stored injury and suppression experience at once. Dumare relives old wounds while his body produces multiple unstable adaptations, including responses to threats that are no longer present.',
     weaknesses:
       'It does not heal him or grant immunity. New attack types still work normally at first. Enemies who constantly change tactics, overwhelm him too quickly, or kill him before adaptation matters can bypass it.',
     selectable: true,
@@ -281,6 +307,8 @@ export const powers: PowerDefinition[] = [
       'Dumare can contest and cleanse hexed or desecrated land enough to reconnect with his natural bloodline abilities and make the area usable again.',
     dmExample:
       "A demon corrupts the battlefield, shutting off Dumare's earth abilities, so Dumare drives his hand into the soil and forces a small clean patch open beneath him.",
+    firstRollBacklash:
+      "Territorial Rejection: The land violently argues with Dumare's attempt to reclaim it. Roots, stone, soil, corruption, and anti-corruption forces erupt together, potentially attacking everything nearby while the ground decides whether to accept him.",
     weaknesses:
       'Strong desecration, active enemy rituals, cursed anchors, or divine-level corruption can resist or reverse the reclamation. It may start small and require pressure, contact, or time to spread.',
     selectable: true,
@@ -321,6 +349,8 @@ export const powers: PowerDefinition[] = [
       'When Dumare senses a calamity-level attack or catastrophic event beginning, his body can force a direct interception path toward the source, impact point, victim, or failure point. During the interception, his body triggers a temporary survival response tailored to that specific calamity. If the calamity is force, his frame reinforces. If it is destructive light, his body develops temporary light-pressure tolerance. If it is infinite darkness, his senses and body fight to remain defined inside it. If it is soul fire, his body hardens the boundary between flesh, mana, and soul. If it is alchemical collapse, his biology resists being rewritten long enough to act. This does not negate the calamity, erase the damage, or guarantee he stops it completely. It lets Dumare intercept the event and remain combat-capable afterward instead of being instantly removed from the battle.',
     dmExample:
       "A Calamity Blade of Fire releases a soul-burning strike that would erase its target from body to spirit. Dumare's Calamity Sense spikes, and Calamity Interception forces him into the path of the strike. His body temporarily hardens the boundary between flesh, mana, and soul so he can take the hit and stay in the fight afterward. He is still directly soul-burned by the attack, but he is not instantly removed from battle.",
+    firstRollBacklash:
+      "False Emergency Vector: Dumare's Calamity Sense spikes and forcibly launches him toward what it identifies as the nearest source, victim, impact point, or failure point. It may choose the wrong location, wrong person, or wrong part of the catastrophe.",
     weaknesses:
       'Only helps against calamity-level attacks or catastrophic events Dumare can physically reach, intercept, or meaningfully contest. Too many simultaneous calamities, instant no-travel effects, teleporting disasters, decoys, attacks outside his movement range, events with no reachable source or failure point, or weapons designed to punish interception can overwhelm it. It does not cancel calamities, make Dumare immune, or guarantee victory. It is an extremely limited emergency interception, not a repeatable defensive move.',
     specialRules:
@@ -363,6 +393,8 @@ export const powers: PowerDefinition[] = [
       'Dumare develops Black Superman/Plutonian-style superbeing physiology. He gains body-based super senses, oppressive heroic presence, disciplined force control, and lethal composure. His glare, voice, breath, silence, and presence carry physical pressure, and he can shift from restraint to killing force against a proven evil threat without rage, hesitation, or wasted motion.',
     dmExample:
       'A villain tries to bluff while charging a hidden weapon. Dumare hears the heartbeat shift, feels the weapon hum, steps forward, and his silent glare pressures the room before he ends the threat cleanly.',
+    firstRollBacklash:
+      "Tyrant Flare: Dumare's enhanced senses, voice, glare, silence, presence, and force control activate at full intensity. He hears and feels too much while unintentionally pressuring, frightening, stunning, or physically affecting everyone nearby.",
     weaknesses:
       'It does not grant mind control, automatic fear, perfect prediction, full light manipulation, restraint immunity, or power synchronization. Strong enemies can push through his pressure, and lethal composure does not make every lethal decision morally correct.',
     selectable: true,
@@ -383,6 +415,8 @@ export const powers: PowerDefinition[] = [
       "Dumare's body reaches heavy Mash Burndead-style physical supremacy. If something can be interacted with through strength, pressure, leverage, grip, flexing, striking, stomping, jumping, throwing, bracing, or collision, Dumare can attempt to overpower it through absurd physical dominance.",
     dmExample:
       'A flying enemy thinks they are safe above him, so Dumare kicks off the air itself for one impossible step and drives a punch into them midair.',
+    firstRollBacklash:
+      "Wrong Impossible Solution: Dumare's body attempts several impossible physical solutions at once and chooses the wrong problem to overpower. He may strike, brace, grip, twist, kick off the air, or redirect force with catastrophic excess and little control.",
     weaknesses:
       'It only works through physical action. If Dumare cannot move, strike, grip, brace, flex, stomp, or collide, this power cannot solve it for him. Non-physical problems, pure mind attacks, or effects outside any physical interaction can bypass it.',
     selectable: true,
@@ -403,6 +437,8 @@ export const powers: PowerDefinition[] = [
       "Dumare's active D20 powers begin working together instead of operating separately. Compatible powers naturally feed into each other without requiring separate focus, turning the entire tree into one synchronized combat style.",
     dmExample:
       "Dumare launches into flight, breaks the enemy formation with Oya's Breakline, steals a spell's momentum mid-charge, and releases it through an Absolute Kinetic Dominion punch carrying Stormlight Current.",
+    firstRollBacklash:
+      'System Collision: Multiple manifested powers activate through the same action with the wrong timing, targets, pathways, and interpretations. Instead of cooperating, they collide and produce an unstable combined effect. A second natural 20 may trigger an early Living Answer backlash without unlocking it.',
     weaknesses:
       'It only synchronizes powers Dumare has already manifested. It does not unlock powers early, create new powers by itself, or make every combo safe. Overloading too many powers at once can strain his body or create collateral damage.',
     convergenceSynergies:

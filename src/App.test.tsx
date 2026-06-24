@@ -36,13 +36,15 @@ describe('Dumare Supreme Power Tree app', () => {
     await userEvent.click(node)
 
     expect(screen.getByTestId('power-details')).toBeInTheDocument()
-    expect(screen.getByText(/No first-roll backlash was supplied/i)).toBeInTheDocument()
+    expect(screen.getByText(/Uncontrolled Petrification/i)).toBeInTheDocument()
     expect(node).toHaveAttribute('data-state', 'unmanifested')
   })
 
   it('shows First Manifestation reveal with backlash field and disables Manifest while pending', async () => {
+    const progress = progressWithOnlyEligible('petrifying-gaze', 'unmanifested')
+    localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(createSavePayload(progress)))
+
     render(<App />)
-    await userEvent.click(screen.getByRole('button', { name: /start new tree/i }))
     await userEvent.click(screen.getByRole('button', { name: /motion: dramatic/i }))
 
     await userEvent.click(screen.getByRole('button', { name: /^manifest/i }))
@@ -53,7 +55,7 @@ describe('Dumare Supreme Power Tree app', () => {
     expect(
       within(reveal).getByRole('heading', { name: /First-Roll Backlash/i }),
     ).toBeInTheDocument()
-    expect(within(reveal).getByText(/No first-roll backlash was supplied/i)).toBeInTheDocument()
+    expect(within(reveal).getByText(/Uncontrolled Petrification/i)).toBeInTheDocument()
   })
 
   it('commits First Manifestation only after acknowledgment', async () => {

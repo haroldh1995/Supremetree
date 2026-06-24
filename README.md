@@ -18,8 +18,8 @@ The current canonical text lives in `src/data/powers.ts` and was transcribed fro
 
 Canonical data metadata:
 
-- Data version: `dumare-d20-superpower-tree-2026-06-24`
-- DOCX SHA-256: `0379E4ADA4F3C15135F1017324C842136537B683AA0A909E09FF3F634A532FB7`
+- Data version: `dumare-d20-superpower-tree-2026-06-24-r2`
+- DOCX SHA-256: `4C9E47401A98BFED5A0D7354B7BEA97A51368016040D7BE6D9AD48D3C14CCD3C`
 
 ## Installation
 
@@ -87,7 +87,7 @@ The sequence is strict:
 Unmanifested -> First Manifestation -> Fully Manifested
 ```
 
-The first selection records the First Manifestation timestamp and shows the first-roll backlash field. The current DOCX did not supply separate first-roll backlash text, so the app displays a neutral "not supplied" message rather than inventing lore.
+The first selection records the First Manifestation timestamp and shows the first-roll backlash field. The updated DOCX includes a first-roll backlash section; the app displays matching current-power entries and leaves unmatched current powers neutral rather than inventing lore or restoring old power names.
 
 The second selection records the Fully Manifested timestamp and removes that power from future random rolls. A fully manifested power cannot be selected a third time.
 

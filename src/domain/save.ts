@@ -2,6 +2,7 @@ import {
   APP_VERSION,
   CANONICAL_DATA_HASH,
   CANONICAL_DATA_VERSION,
+  COMPATIBLE_CANONICAL_DATA_HASHES,
   SAVE_SCHEMA_VERSION,
   powers,
 } from '../data/powers'
@@ -52,7 +53,9 @@ export function validateSavePayload(value: unknown): SavePayload {
   if (value.schemaVersion !== SAVE_SCHEMA_VERSION) {
     throw new Error('Unsupported save schema version.')
   }
-  if (value.canonicalDataHash !== CANONICAL_DATA_HASH) {
+  const canonicalDataHash =
+    typeof value.canonicalDataHash === 'string' ? value.canonicalDataHash : ''
+  if (!COMPATIBLE_CANONICAL_DATA_HASHES.some((hash) => hash === canonicalDataHash)) {
     throw new Error('This save was created for different canonical power data.')
   }
   if (typeof value.savedAt !== 'string') {
