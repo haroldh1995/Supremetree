@@ -1,149 +1,132 @@
-import { powerDefinitions } from '../data/powers'
-import { makeId, nowIso } from './ids'
 import type {
-  AdvancementNarrative,
-  AdvancementRecord,
-  AuditSource,
-  DrawKind,
+  AppProgress,
+  LivingAnswerProgress,
+  ManifestationHistoryEntry,
+  PendingManifestation,
   PowerDefinition,
   PowerProgress,
   PowerState,
+  UserPreferences,
 } from './types'
 
-export function createInitialPowerProgress(definitions = powerDefinitions): PowerProgress[] {
-  return definitions.map((power) => ({
+export const defaultPreferences: UserPreferences = {
+  reducedMotion: false,
+}
+
+export function createInitialPowerProgress(
+  powers: PowerDefinition[],
+): Record<string, PowerProgress> {
+  return Object.fromEntries(
+    powers.map((power) => [
+      power.id,
+      {
+        powerId: power.id,
+        state: 'unmanifested' satisfies PowerState,
+        selectionCount: 0,
+      },
+    ]),
+  )
+}
+
+export function createInitialProgress(powers: PowerDefinition[]): AppProgress {
+  return {
+    powers: createInitialPowerProgress(powers),
+    history: [],
+    cooldown: {},
+    livingAnswer: createInitialLivingAnswerProgress(),
+    preferences: defaultPreferences,
+  }
+}
+
+export function createInitialLivingAnswerProgress(): LivingAnswerProgress {
+  return { state: 'locked' }
+}
+
+export function getNextPowerState(current: PowerState): Exclude<PowerState, 'unmanifested'> {
+  if (current === 'unmanifested') {
+    return 'first_manifestation'
+  }
+  if (current === 'first_manifestation') {
+    return 'fully_manifested'
+  }
+  throw new Error('A fully manifested power cannot advance again')
+}
+
+export function getManifestationKind(nextState: Exclude<PowerState, 'unmanifested'>) {
+  return nextState === 'first_manifestation' ? 'First Manifestation' : 'Full Manifestation'
+}
+
+export function createPendingManifestation(
+  power: PowerDefinition,
+  progress: PowerProgress,
+  sequence: number,
+  selectedAt: string,
+): PendingManifestation {
+  const nextState = getNextPowerState(progress.state)
+
+  return {
+    id: `pending-${selectedAt}-${power.id}`,
     powerId: power.id,
-    state: 'locked',
-    manifestationCount: 0,
-    appearanceCount: 0,
-    advancedSessionIds: [],
-    narrativeLocked: false,
-    temporaryExcluded: false,
-    randomSelectionAllowed: power.isRandomlySelectable,
-    backlashStatus: 'not-triggered',
-  }))
+    previousState: progress.state,
+    nextState,
+    kind: getManifestationKind(nextState),
+    selectedAt,
+    sequence,
+  }
 }
 
-export function stateToStage(state: PowerState): number {
-  if (state === 'manifested') return 1
-  if (state === 'fully-realized') return 2
-  return 0
-}
-
-export function nextPowerState(state: PowerState): PowerState {
-  if (state === 'locked') return 'manifested'
-  if (state === 'manifested') return 'fully-realized'
-  throw new Error('Fully realized powers cannot be advanced again.')
-}
-
-export function canAdvancePower(progress: PowerProgress): boolean {
-  return progress.state !== 'fully-realized'
-}
-
-export interface AdvancePowerInput {
-  definition: PowerDefinition
-  progress: PowerProgress
-  sessionId: string
-  kind: DrawKind
-  source: AuditSource
-  reason: string
-  timestamp?: string
-  narrative?: AdvancementNarrative
-}
-
-export interface AdvancePowerOutput {
-  progress: PowerProgress
-  advancement: AdvancementRecord
-  previousState: PowerState
-  newState: PowerState
-}
-
-export function advancePower(input: AdvancePowerInput): AdvancePowerOutput {
-  if (!canAdvancePower(input.progress)) {
-    throw new Error(`${input.definition.name} is already fully realized.`)
+export function commitPendingManifestation(
+  appProgress: AppProgress,
+  power: PowerDefinition,
+  pending: PendingManifestation,
+): AppProgress {
+  const current = appProgress.powers[power.id]
+  if (!current) {
+    throw new Error(`Cannot commit unknown power ${power.id}`)
+  }
+  if (current.state !== pending.previousState) {
+    throw new Error(`Cannot commit ${power.name}; stored state changed before acknowledgment`)
+  }
+  if (current.state === 'fully_manifested') {
+    throw new Error(`${power.name} is already fully manifested`)
   }
 
-  const timestamp = input.timestamp ?? nowIso()
-  const previousState = input.progress.state
-  const newState = nextPowerState(previousState)
-  const firstManifestation = previousState === 'locked' && newState === 'manifested'
-  const advancement: AdvancementRecord = {
-    id: makeId('adv'),
-    powerId: input.definition.id,
-    previousState,
-    newState,
-    sessionId: input.sessionId,
-    kind: input.kind,
-    source: input.source,
-    timestamp,
-    reason: input.reason,
-    narrative: input.narrative ?? {},
-    firstRollBacklash: firstManifestation ? input.definition.firstRollBacklash : undefined,
+  const updatedPower: PowerProgress = {
+    ...current,
+    state: pending.nextState,
+    selectionCount: current.selectionCount + 1,
+    firstManifestedAt:
+      pending.nextState === 'first_manifestation' ? pending.selectedAt : current.firstManifestedAt,
+    fullyManifestedAt:
+      pending.nextState === 'fully_manifested' ? pending.selectedAt : current.fullyManifestedAt,
   }
 
-  const progress: PowerProgress = {
-    ...input.progress,
-    state: newState,
-    manifestationCount: input.progress.manifestationCount + (firstManifestation ? 1 : 0),
-    appearanceCount: input.progress.appearanceCount + 1,
-    lastAdvancedAt: timestamp,
-    advancedSessionIds: [...input.progress.advancedSessionIds, input.sessionId],
-    backlashStatus:
-      firstManifestation && input.definition.firstRollBacklash
-        ? 'triggered'
-        : input.progress.backlashStatus,
+  const historyEntry: ManifestationHistoryEntry = {
+    id: `history-${pending.sequence}-${pending.powerId}`,
+    sequence: pending.sequence,
+    powerId: power.id,
+    powerName: power.name,
+    kind: pending.kind,
+    manifestedAt: pending.selectedAt,
   }
 
-  return { progress, advancement, previousState, newState }
-}
-
-export function reverseAdvancement(
-  progress: PowerProgress,
-  advancement: AdvancementRecord,
-): PowerProgress {
-  const advancedSessionIds = progress.advancedSessionIds.filter(
-    (id) => id !== advancement.sessionId,
-  )
   return {
-    ...progress,
-    state: advancement.previousState,
-    manifestationCount:
-      advancement.previousState === 'locked' && advancement.newState === 'manifested'
-        ? Math.max(0, progress.manifestationCount - 1)
-        : progress.manifestationCount,
-    appearanceCount: Math.max(0, progress.appearanceCount - 1),
-    lastAdvancedAt: undefined,
-    advancedSessionIds,
+    ...appProgress,
+    powers: {
+      ...appProgress.powers,
+      [power.id]: updatedPower,
+    },
+    history: [...appProgress.history, historyEntry],
+    pendingManifestation: undefined,
   }
 }
 
-export function setPowerState(
-  progress: PowerProgress,
-  state: PowerState,
-  reason: string,
-): PowerProgress {
-  const stage = stateToStage(state)
+export function resetProgress(
+  powers: PowerDefinition[],
+  preferences = defaultPreferences,
+): AppProgress {
   return {
-    ...progress,
-    state,
-    manifestationCount: stage > 0 ? Math.max(progress.manifestationCount, 1) : 0,
-    appearanceCount: Math.max(progress.appearanceCount, stage),
-    dmNotes: [progress.dmNotes, reason].filter(Boolean).join('\n'),
+    ...createInitialProgress(powers),
+    preferences,
   }
-}
-
-export function countCompletedStages(progress: PowerProgress[]): number {
-  return progress.reduce((total, item) => total + stateToStage(item.state), 0)
-}
-
-export function countRemainingStages(
-  progress: PowerProgress[],
-  definitions = powerDefinitions,
-): number {
-  const requiredIds = new Set(
-    definitions.filter((power) => power.isRequiredForLivingAnswer).map((p) => p.id),
-  )
-  return progress
-    .filter((item) => requiredIds.has(item.powerId))
-    .reduce((total, item) => total + Math.max(0, 2 - stateToStage(item.state)), 0)
 }

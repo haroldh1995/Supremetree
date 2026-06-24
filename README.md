@@ -1,26 +1,25 @@
-# Dumare: Power Realization Tracker
+# DUMARE — SUPREME POWER TREE
 
-Local-first campaign progression tracker for Dumare's randomized superpower acquisition across an approximately 12-month tabletop campaign.
+A local-first, single-page React app that turns Dumare's current D20 superpower tree into an interactive manifestation tracker. The page is intentionally focused: open the tree, press **MANIFEST**, review the dramatic reveal, acknowledge it, and export/import progress as a portable JSON save file.
 
-The app preserves random advancement while preventing missed sessions, irregular attendance, or bad luck from blocking the planned reveal of The Living Answer.
+## Technology Stack
 
-## Source Of Truth
-
-- Textual power content comes only from the uploaded `Dumare_D20_Superpower_Tree.docx` used for this build.
-- The uploaded skill-tree image is stored at `public/assets/dumare-skill-tree.jpg` and is used as a visual reference.
-- Canonical structured power data lives in `src/data/powers.ts`.
-- The app does not parse the DOCX at runtime and does not intentionally import, preserve, or merge older power data.
-
-## Technology
-
-- React, TypeScript, Vite
-- React Router
-- IndexedDB with Dexie
-- PWA generation with `vite-plugin-pwa`
-- CSS custom-property design system in `src/styles.css`
+- React, TypeScript, and Vite
+- CSS with SVG-driven tree connections and custom SVG power emblems
+- Browser localStorage autosave with strict JSON save validation
 - Vitest and React Testing Library
-- Playwright E2E tests
+- Playwright end-to-end tests
 - ESLint and Prettier
+- GitHub Actions deployment to GitHub Pages
+
+## Canonical Sources
+
+The current canonical text lives in `src/data/powers.ts` and was transcribed from the newest uploaded `Dumare_D20_Superpower_Tree.docx`. The supplied tree image is stored as `public/assets/dumare-supreme-power-tree-blueprint.jpg` and is used as a visual blueprint/backdrop only. The app rebuilds the tree as HTML, CSS, SVG, and React components instead of shipping the image as a flat clickable screenshot.
+
+Canonical data metadata:
+
+- Data version: `dumare-d20-superpower-tree-2026-06-24`
+- DOCX SHA-256: `0379E4ADA4F3C15135F1017324C842136537B683AA0A909E09FF3F634A532FB7`
 
 ## Installation
 
@@ -34,7 +33,19 @@ npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite, usually `http://localhost:5173`.
+Open the printed local Vite URL.
+
+## Testing
+
+```bash
+npm run typecheck
+npm run lint
+npm run format:check
+npm run test
+npm run test:e2e
+```
+
+`npm run test:e2e` builds and previews the app, then runs Playwright across desktop, tablet, phone portrait, and phone landscape projects.
 
 ## Production Build
 
@@ -43,124 +54,124 @@ npm run build
 npm run preview
 ```
 
-The preview command serves the built app locally. The app is static and can be deployed to any static host that supports SPA fallback to `index.html`.
+The GitHub Actions workflow builds with the `/Supremetree/` Vite base path for GitHub Pages.
 
-## Testing
+## GitHub Pages Deployment
 
-```bash
-npm run typecheck
-npm run lint
-npm run format:check
-npm test
-npm run test:e2e
-npm run build
+Push to `main`. The workflow in `.github/workflows/pages.yml` runs:
+
+1. install dependencies
+2. typecheck
+3. lint
+4. unit/component tests
+5. production build
+6. GitHub Pages artifact upload and deployment
+
+The deployed URL is:
+
+```text
+https://haroldh1995.github.io/Supremetree/
 ```
 
-Playwright runs the seven campaign workflows on desktop Chromium and the responsive workflow on desktop, tablet, phone portrait, and phone landscape Chromium projects.
+## Manifestation Rules
 
-## Local-First Persistence
+Every D20 power has one of three states:
 
-IndexedDB is the primary campaign database. Dexie tables persist:
+- `unmanifested`
+- `first_manifestation`
+- `fully_manifested`
 
-- Campaign settings
-- Canonical power data version
-- Power progression state
-- Session records
-- Draw history
-- Audit events
-- Catch-up credits
-- Narrative requirements
-- Living Answer status
-- UI preferences
-- Backup metadata
+The sequence is strict:
 
-Critical campaign state is not stored only in React state or localStorage.
+```text
+Unmanifested -> First Manifestation -> Fully Manifested
+```
 
-## Backup And Restore
+The first selection records the First Manifestation timestamp and shows the first-roll backlash field. The current DOCX did not supply separate first-roll backlash text, so the app displays a neutral "not supplied" message rather than inventing lore.
 
-Backup export produces a JSON payload with:
+The second selection records the Fully Manifested timestamp and removes that power from future random rolls. A fully manifested power cannot be selected a third time.
 
-- `schemaVersion`
-- `exportedAt`
-- `appName`
-- `canonicalPowerDataVersion`
-- all persisted campaign tables
+## Random Selection
 
-Import validates the schema, rejects malformed or unsupported files, previews key counts, and asks for confirmation before overwriting local data.
+The MANIFEST button randomly selects from eligible D20 powers:
 
-## Randomization Rules
+- unmanifested powers
+- powers already at First Manifestation
+- powers marked selectable by the canonical data
 
-The draw engine is in `src/domain/randomizer.ts`.
+Excluded powers:
 
-- Production draws use `crypto.getRandomValues()` when available.
-- Tests can inject a seeded deterministic provider.
-- Fully realized powers are excluded.
-- Milestone-controlled powers are excluded.
-- The Living Answer is never in the random pool.
-- Same-session duplicate advancement is blocked unless overridden.
-- Manifested powers normally cool down until other advancements happen.
-- Never-manifested and long-waiting powers gain weight.
-- Behind-schedule campaigns get gentle schedule-protection weighting.
+- fully manifested powers
+- The Living Answer
+- milestone-only powers, if future canonical data marks any power that way
+- powers blocked by the light anti-repetition rule
 
-Draws are two-step: preview/reveal first, then confirm and commit. Rerolls and cancellations create audit records.
+Production random selection uses `crypto.getRandomValues()` with unbiased integer selection. Tests can inject deterministic random providers.
 
-## Progression Guarantees
+## Anti-Repetition
 
-Each ordinary rollable power follows:
+After a power receives its First Manifestation, it is blocked from the immediately following MANIFEST press when another eligible power exists. Once any different power is selected, the earlier power becomes eligible again. If it is the only eligible power remaining, it can be selected.
 
-`Locked -> Manifested -> Fully Realized`
+## Save File Format
 
-The schedule engine recalculates campaign status from current date, campaign dates, expected remaining sessions, missed sessions, catch-up credits, and remaining stages. It reports:
+`SAVE PROGRESS` downloads JSON containing:
 
-- Ahead
-- On schedule
-- Slightly behind
-- Critically behind
+- schema version
+- app version
+- save timestamp
+- canonical data version and hash
+- all power progression states
+- manifestation counts and timestamps
+- history
+- cooldown state
+- pending unacknowledged result
+- Convergence Engine state
+- The Living Answer state
+- user preferences
 
-The default plan targets ordinary power completion by Month 10, Convergence Engine completion in Month 11, and The Living Answer narrative availability in Month 12.
+`LOAD PROGRESS` validates the file before applying it and asks for confirmation before replacing current progress. Invalid JSON, unsupported versions, unknown power IDs, invalid states, and mismatched canonical hashes are rejected without changing current progress.
 
-## Missed Sessions And Catch-Up Credits
+## Browser Autosave
 
-Missed sessions do not grant hidden story advancement. They are recorded honestly and can generate explicit catch-up credit records. Credits track owed, used, and remaining stages and can be approved, rejected, deferred, converted to milestones, partially used, or reversed.
+The app automatically stores progress in localStorage under a versioned key. Autosave includes pending results, so closing the page before acknowledging a result restores the uncommitted reveal instead of silently committing or losing it.
 
 ## Convergence Engine
 
-Convergence Engine is milestone controlled in this app. It is not a normal random draw. It advances from ordinary powers becoming fully realized and represents synchronization of powers Dumare has already manifested.
+The current DOCX lists Convergence Engine as power 20 in the D20 list and does not mark it as milestone-only. It is therefore selectable by MANIFEST. Its node separately displays how many other D20 powers are fully manifested and can be synchronized.
 
 ## The Living Answer
 
-The Living Answer is a final unlock, not a random roll. The app tracks mechanical availability separately from DM narrative reveal. Calendar month alone cannot reveal it.
+The Living Answer is never randomly rolled. It becomes mechanically available only when all 20 D20 powers are fully manifested. The user must explicitly confirm the narrative reveal with **REVEAL THE LIVING ANSWER**. The mana battery remains separate and emergency-only; revealing The Living Answer does not mark the battery as fully activated.
 
-The mana battery full function is displayed separately as emergency-only and is not automatically activated by The Living Answer.
+## Project Structure
 
-## Responsive Behavior
+```text
+src/data/                 DOCX-derived canonical power data
+src/domain/               pure eligibility, progression, random, save, autosave, and status logic
+src/components/           React tree, nodes, overlays, controls, and dialogs
+src/test/                 shared test helpers
+tests/e2e/                Playwright workflow and responsive tests
+public/assets/            supplied visual blueprint image
+.github/workflows/        GitHub Pages CI/deploy workflow
+```
 
-The desktop layout uses persistent navigation, multi-column dashboards, adjacent session/draw panels, and visible progression summaries. Tablet and phone layouts collapse to stacked panels with bottom navigation, touch-friendly controls, and no required hover-only controls.
+## Accessibility Notes
 
-## Architecture
-
-- `src/data` - canonical DOCX-derived power data
-- `src/domain` - pure progression, schedule, randomizer, backup, validation, convergence, and Living Answer logic
-- `src/persistence` - Dexie schema and repository transactions
-- `src/state` - live IndexedDB React state and typed actions
-- `src/components` - shared app shell and controls
-- `src/routes` - major screens
-- `tests/e2e` - Playwright workflow tests
-
-Business rules stay outside React components wherever practical.
+- Every power node is a real keyboard-focusable button.
+- Enter or Space opens details without advancing the power.
+- Result and detail overlays use semantic dialogs and visible focus states.
+- Draw results are announced through an `aria-live` region.
+- Reduced-motion mode shortens the reveal cycle.
+- Color is paired with state labels, runes, borders, and glow styles.
 
 ## Updating Canonical Power Data
 
-1. Extract the new authoritative DOCX.
-2. Update `src/data/powers.ts` with the new canonical order, descriptions, weaknesses, special rules, and final unlock text.
-3. Update `POWER_DATA_VERSION`.
-4. Run:
+1. Replace the DOCX source outside the app.
+2. Re-transcribe the current DOCX into `src/data/powers.ts`.
+3. Update `CANONICAL_DATA_VERSION` and `CANONICAL_DATA_HASH`.
+4. Keep fields empty or omitted when the DOCX does not supply that lore.
+5. Run the full test suite and build.
 
-```bash
-npm run typecheck
-npm test
-npm run test:e2e
-npm run build
-```
+## Replacing Visual Assets
 
-Do not merge old power arrangements into the new dataset unless a future authoritative DOCX explicitly includes them.
+Replace `public/assets/dumare-supreme-power-tree-blueprint.jpg` with the new supplied image. Keep the filename or update the CSS variable setup in `src/App.tsx`.

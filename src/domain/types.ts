@@ -1,306 +1,152 @@
-export type PowerState = 'locked' | 'manifested' | 'fully-realized'
+export type PowerState = 'unmanifested' | 'first_manifestation' | 'fully_manifested'
 
-export type AuditSource =
-  | 'random'
-  | 'manual'
-  | 'catch-up'
-  | 'milestone'
-  | 'import'
-  | 'correction'
-  | 'system'
+export type LivingAnswerState = 'locked' | 'available' | 'revealed'
 
-export type AuditEventType =
-  | 'campaign-created'
-  | 'campaign-settings-changed'
-  | 'session-created'
-  | 'session-edited'
-  | 'session-missed'
-  | 'session-deleted'
-  | 'random-draw-performed'
-  | 'draw-rerolled'
-  | 'draw-cancelled'
-  | 'advancement-committed'
-  | 'manual-advancement'
-  | 'advancement-reversed'
-  | 'power-locked'
-  | 'power-unlocked'
-  | 'power-edited'
-  | 'catch-up-credit-created'
-  | 'catch-up-credit-used'
-  | 'catch-up-credit-updated'
-  | 'milestone-completed'
-  | 'convergence-engine-advanced'
-  | 'living-answer-available'
-  | 'living-answer-revealed'
-  | 'living-answer-fully-active'
-  | 'import-performed'
-  | 'restore-performed'
-  | 'campaign-reset'
-  | 'undo-performed'
+export type TierId = 1 | 2 | 3 | 4 | 'convergence'
 
-export type DrawKind = 'normal' | 'catch-up' | 'bonus' | 'forced'
+export type TreePoint = {
+  x: number
+  y: number
+}
 
-export type LivingAnswerStatus =
-  | 'sealed'
-  | 'requirements-in-progress'
-  | 'mechanically-available'
-  | 'narratively-revealed'
-  | 'fully-active'
-
-export type CatchUpCreditStatus =
-  | 'pending'
-  | 'approved'
-  | 'rejected'
-  | 'deferred'
-  | 'converted-to-milestone'
-  | 'used'
-
-export interface PowerDefinition {
+export type PowerDefinition = {
   id: string
-  displayNumber: number
+  number: number
   name: string
-  shortSummary: string
+  tier: TierId
+  category: string
+  shortDescription: string
   fullDescription: string
   dmExample?: string
-  tier: number
-  tierLabel: string
-  relativeStrengthOrder: number
-  category: string
   firstRollBacklash?: string
-  weaknesses: string[]
-  hardCounters: string[]
-  convergenceSynergies: string[]
-  specialAcquisitionRules: string[]
-  isRandomlySelectable: boolean
-  isMilestoneControlled: boolean
-  isRequiredForLivingAnswer: boolean
-  notes: string[]
+  weaknesses?: string
+  hardCounters?: string
+  convergenceSynergies?: string
+  specialRules?: string
+  selectable: boolean
+  milestoneControlled: boolean
+  requiredForLivingAnswer: boolean
+  iconKey: IconKey
+  visualPosition: TreePoint
+  connectionTargets: string[]
 }
 
-export interface FinalUnlockDefinition {
-  id: 'the-living-answer'
+export type IconKey =
+  | 'gaze'
+  | 'flight'
+  | 'stormlight'
+  | 'denial'
+  | 'anchor'
+  | 'impossible'
+  | 'kinetic'
+  | 'worldbreaker'
+  | 'muscle'
+  | 'predator'
+  | 'breakline'
+  | 'crown'
+  | 'stance'
+  | 'gaia'
+  | 'law'
+  | 'calamity'
+  | 'momentum'
+  | 'solar'
+  | 'mandate'
+  | 'convergence'
+
+export type LivingAnswerDefinition = {
+  id: 'living-answer'
   name: 'The Living Answer'
+  shortDescription: string
+  fullDescription: string
   unlockRequirement: string
-  description: string
   dmExample?: string
-  weaknesses: string[]
-  hardCounters: string[]
-  notes: string[]
+  weaknesses?: string
+  visualPosition: TreePoint
 }
 
-export interface CampaignSettings {
-  campaignId: string
-  campaignName: string
-  startDate: string
-  targetDate: string
-  defaultDurationMonths: number
-  expectedSessionsPerMonth: number
-  weeklySessionDay: number
-  ordinaryCompletionMonth: number
-  convergenceCompletionMonth: number
-  livingAnswerRevealMonth: number
-  catchUpRequiresApproval: boolean
-  automaticCatchUpCredits: boolean
-  cooldownAdvancements: number
-  sameSessionDuplicateRequiresOverride: boolean
-  tierGatingEnabled: boolean
-  animationLevel: 'full' | 'reduced' | 'none'
-  soundEffects: boolean
-  appearance: 'dark' | 'light' | 'system'
-  density: 'comfortable' | 'compact'
-  dmPin?: string
-}
-
-export interface Campaign {
-  id: string
-  name: string
-  createdAt: string
-  updatedAt: string
-  canonicalPowerDataVersion: string
-  guidedTourDismissed: boolean
-}
-
-export interface PowerProgress {
+export type PowerProgress = {
   powerId: string
   state: PowerState
-  manifestationCount: number
-  appearanceCount: number
-  lastAdvancedAt?: string
-  advancedSessionIds: string[]
-  narrativeLocked: boolean
-  temporaryExcluded: boolean
-  randomSelectionAllowed: boolean
-  tierOverride?: number
-  relativeWeightOverride?: number
-  lockReason?: string
-  dmNotes?: string
-  backlashStatus: 'not-triggered' | 'triggered' | 'resolved' | 'modified' | 'skipped' | 'custom'
-  backlashOutcome?: string
+  selectionCount: number
+  firstManifestedAt?: string
+  fullyManifestedAt?: string
 }
 
-export interface AdvancementNarrative {
-  triggeringEvent?: string
-  manifestationAppearance?: string
-  backlashOutcome?: string
-  consequences?: string
-  witnesses?: string
-  notes?: string
+export type ManifestationKind = 'First Manifestation' | 'Full Manifestation'
+
+export type ManifestationHistoryEntry = {
+  id: string
+  sequence: number
+  powerId: string
+  powerName: string
+  kind: ManifestationKind
+  manifestedAt: string
 }
 
-export interface AdvancementRecord {
+export type PendingManifestation = {
   id: string
   powerId: string
   previousState: PowerState
-  newState: PowerState
-  sessionId: string
-  kind: DrawKind
-  source: AuditSource
-  timestamp: string
-  reason: string
-  narrative: AdvancementNarrative
-  firstRollBacklash?: string
+  nextState: Exclude<PowerState, 'unmanifested'>
+  kind: ManifestationKind
+  selectedAt: string
+  sequence: number
 }
 
-export interface SessionRecord {
-  id: string
-  sessionNumber: number
-  date: string
-  attended: boolean
-  title?: string
-  summary?: string
-  majorSession: boolean
-  bossEncounter: boolean
-  divineMilestone: boolean
-  normalAdvancements: number
-  bonusAdvancements: number
-  catchUpAdvancements: number
-  powerAdvancements: AdvancementRecord[]
-  manualCorrections: string[]
-  dmNotes?: string
-  createdAt: string
-  updatedAt: string
+export type CooldownState = {
+  blockedPowerId?: string
 }
 
-export interface DrawCandidate {
+export type UserPreferences = {
+  reducedMotion: boolean
+}
+
+export type LivingAnswerProgress = {
+  state: LivingAnswerState
+  revealedAt?: string
+}
+
+export type AppProgress = {
+  powers: Record<string, PowerProgress>
+  history: ManifestationHistoryEntry[]
+  cooldown: CooldownState
+  pendingManifestation?: PendingManifestation
+  livingAnswer: LivingAnswerProgress
+  preferences: UserPreferences
+}
+
+export type SavePayload = {
+  schemaVersion: 1
+  appVersion: string
+  savedAt: string
+  canonicalDataVersion: string
+  canonicalDataHash: string
+  progress: AppProgress
+}
+
+export type EligibleCandidate = {
   power: PowerDefinition
   progress: PowerProgress
-  eligible: boolean
-  reasons: string[]
-  ineligibleReasons: string[]
-  weight: number
-  lastAdvancedAt?: string
-}
-
-export interface DrawResult {
-  id: string
-  sessionId: string
-  kind: DrawKind
-  selectedPowerId: string
-  candidateCount: number
-  candidateSnapshot: Array<Pick<DrawCandidate, 'weight' | 'eligible'> & { powerId: string }>
-  previousState: PowerState
-  newState: PowerState
-  eligibilityReason: string
-  cooldownCreated: boolean
-  scheduleProtectionActive: boolean
-  timestamp: string
-  status: 'previewed' | 'committed' | 'rerolled' | 'cancelled'
-  rerollReason?: string
-}
-
-export interface CatchUpCredit {
-  id: string
-  dateCreated: string
   reason: string
-  campaignMonth: number
-  stagesOwed: number
-  used: number
-  remaining: number
-  dmApprovalRequired: boolean
-  status: CatchUpCreditStatus
-  relatedMissedSessionIds: string[]
-  notes?: string
 }
 
-export interface MilestoneRequirement {
-  id: string
+export type IneligibleReason = {
+  powerId: string
+  reason: string
+}
+
+export type ConvergenceStatus = {
+  powerState: PowerState
+  synchronizedFullyManifested: number
+  synchronizationTotal: number
+  synchronizationRatio: number
   label: string
-  description: string
-  complete: boolean
-  completedAt?: string
-  source: 'living-answer' | 'convergence' | 'custom'
-  requiredPowerIds?: string[]
 }
 
-export interface LivingAnswerRecord {
-  id: 'the-living-answer'
-  status: LivingAnswerStatus
-  mechanicallyAvailableAt?: string
-  narrativeRevealConfirmedAt?: string
-  fullyActiveAt?: string
-  dmNotes?: string
-  manaBatteryEmergencyOnly: true
-  manaBatteryFullActivation: 'inactive' | 'emergency-available' | 'used'
-}
-
-export interface AuditEvent {
-  id: string
-  timestamp: string
-  type: AuditEventType
-  relatedSessionId?: string
-  relatedPowerId?: string
-  previousValue?: unknown
-  newValue?: unknown
-  reason: string
-  source: AuditSource
-  reversible: boolean
-  undoneByEventId?: string
-}
-
-export interface UiPreferences {
-  id: 'local'
-  activePowerId?: string
-  treeZoom: number
-  treeX: number
-  treeY: number
-  guidedTourDismissed: boolean
-}
-
-export interface BackupMetadata {
-  id: string
-  createdAt: string
-  reason: string
-  filename: string
-}
-
-export interface BackupPayload {
-  schemaVersion: number
-  exportedAt: string
-  appName: 'Dumare: Power Realization Tracker'
-  canonicalPowerDataVersion: string
-  campaigns: Campaign[]
-  settings: CampaignSettings[]
-  powerProgress: PowerProgress[]
-  sessions: SessionRecord[]
-  drawHistory: DrawResult[]
-  auditEvents: AuditEvent[]
-  catchUpCredits: CatchUpCredit[]
-  narrativeRequirements: MilestoneRequirement[]
-  livingAnswer: LivingAnswerRecord[]
-  uiPreferences: UiPreferences[]
-  backupMetadata: BackupMetadata[]
-}
-
-export interface AppData {
-  campaign: Campaign | null
-  settings: CampaignSettings | null
-  powerProgress: PowerProgress[]
-  sessions: SessionRecord[]
-  drawHistory: DrawResult[]
-  auditEvents: AuditEvent[]
-  catchUpCredits: CatchUpCredit[]
-  narrativeRequirements: MilestoneRequirement[]
-  livingAnswer: LivingAnswerRecord | null
-  uiPreferences: UiPreferences
-  backupMetadata: BackupMetadata[]
+export type LivingAnswerStatus = {
+  state: LivingAnswerState
+  mechanicallyAvailable: boolean
+  requiredPowersComplete: number
+  requiredPowersTotal: number
+  requirementText: string
 }

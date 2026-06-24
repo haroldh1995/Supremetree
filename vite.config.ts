@@ -2,23 +2,26 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const base = process.env.GITHUB_ACTIONS ? '/Supremetree/' : '/'
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['assets/dumare-skill-tree.jpg'],
+      includeAssets: ['assets/dumare-supreme-power-tree-blueprint.jpg'],
       manifest: {
-        name: 'Dumare: Power Realization Tracker',
-        short_name: 'Dumare Tracker',
-        description: 'Local-first campaign progression tracker for Dumare power realization.',
+        name: 'DUMARE — SUPREME POWER TREE',
+        short_name: 'Dumare Tree',
+        description: 'Single-page local-first manifestation tracker for Dumare powers.',
         theme_color: '#0b0a08',
         background_color: '#0b0a08',
         display: 'standalone',
-        start_url: '/',
+        start_url: base,
         icons: [
           {
-            src: '/app-icon.svg',
+            src: `${base}app-icon.svg`,
             sizes: '512x512',
             type: 'image/svg+xml',
             purpose: 'any maskable',
