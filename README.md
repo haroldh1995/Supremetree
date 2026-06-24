@@ -65,7 +65,7 @@ Push to `main`. The workflow in `.github/workflows/pages.yml` runs:
 3. lint
 4. unit/component tests
 5. production build
-6. GitHub Pages artifact upload and deployment
+6. publish the production `dist` output to the `gh-pages` branch
 
 The deployed URL is:
 
